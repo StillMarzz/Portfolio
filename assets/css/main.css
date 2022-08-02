@@ -2313,7 +2313,7 @@ input, select, textarea {
 				#top .image {
 					width: 24em;
 					height: 24em;
-					margin: 0;
+					margin: auto;
 				}
 
 	}
@@ -2330,7 +2330,7 @@ input, select, textarea {
 			}
 
 				#top .image {
-					margin: 0 auto 2em auto;
+					margin: 0 auto 50px auto;
 				}
 
 	}
