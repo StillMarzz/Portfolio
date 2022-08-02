@@ -2511,7 +2511,7 @@ input, select, textarea {
 				#top .image {
 					width: 15em;
 					height: 15em;
-					margin-bottom: 0;
+					margin-bottom: 50px;
 				}
 
 				#top p {
