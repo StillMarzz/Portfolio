@@ -152,7 +152,6 @@ input, select, textarea {
 	}
 
 	h1, h2, h4, h5, h6 {
-		color: #fff;
 		margin: 0 0 0.75em 0;
 	}
 	h3 {
@@ -201,6 +200,7 @@ input, select, textarea {
 	}
 	#Icon {
 		text-align: center;
+		color: #fff
 	}
 
 	hr {
@@ -223,7 +223,7 @@ input, select, textarea {
 		header > p {
 			font-size: 1.25em;
 			margin: 0;
-			color: #fff;
+			color: inherit;
 		}
 
 	footer {
@@ -272,7 +272,6 @@ input, select, textarea {
 }
 .fixed li:nth-child(4) a{
 	background-color: #333;
-	padding-left: 5px;
 }
 .fixed li a i {
 	position: absolute;
@@ -1632,19 +1631,19 @@ input, select, textarea {
 	}
 
 	form ::-webkit-input-placeholder {
-		color: #555 !important;
+		color: #fff !important;
 	}
 
 	form :-moz-placeholder {
-		color: #555 !important;
+		color: #fff !important;
 	}
 
 	form ::-moz-placeholder {
-		color: #555 !important;
+		color: #fff !important;
 	}
 
 	form :-ms-input-placeholder {
-		color: #555 !important;
+		color: #fff !important;
 	}
 
 	form ::-moz-focus-inner {
@@ -1989,7 +1988,7 @@ input, select, textarea {
 /* Box */
 			
 	.box {
-		background: #00021f;
+		background: #0062DB;
 		box-shadow: inset 0px 0px 0px 1px rgba(0, 0, 0, 0.15), 0px 2px 3px 0px rgba(0, 0, 0, 0.1);
 		text-align: center;
 		padding: 2em;
@@ -1997,6 +1996,8 @@ input, select, textarea {
 
 		.box.style1 {
 			padding: 3em 2em 3.5em 2em;
+			background-color: #0062DB;
+			box-shadow: 1px 6px 10px -6px;
 		}
 
 			.box.style1 h3 {
@@ -2021,11 +2022,13 @@ input, select, textarea {
 			width: auto;
 		}
 
+
 /* Icons */
 
 	.icon {
 		text-decoration: none;
 		text-decoration: none;
+		color: #fff;
 	}
 
 		.icon:before {
@@ -2086,26 +2089,28 @@ input, select, textarea {
 
 		.wrapper.style1 {
 			background-image: none;
-			background-color: #1f1d00;
+			background-color: #00021f;
 		}
 
 		.wrapper.style2 {
-			background-color: #060500;
-			color: #fff;
+			background-color: #fff;
+			color: #000;
+		}
+		.wrapper.style2.two {
+			color: #000!important;
 		}
 
 		.wrapper.style3 {
-			background-color: #1f1d00;
+			background-color: #00021f;
 		}
 
 		.wrapper.style4 {
-			background-color: #00021f;
-			color: #fff;
-			text-shadow: -1px -1px 0px #181818;
+			background-color: #fff;
+			color: #000;
 		}
 
 			.wrapper.style4 h1, .wrapper.style4 h2, .wrapper.style4 h3, .wrapper.style4 h4, .wrapper.style4 h5, .wrapper.style4 h6 {
-				color: #fff;
+				color: #000;
 			}
 
 			.wrapper.style4 form input[type=text],
@@ -2113,7 +2118,7 @@ input, select, textarea {
 			.wrapper.style4 form select,
 			.wrapper.style4 form textarea {
 				border: none;
-				background: #000;
+				background: #00021f;
 			}
 
 				.wrapper.style4 form input[type=text]:focus,
@@ -2126,7 +2131,7 @@ input, select, textarea {
 /* Nav */
 
 	#nav {
-		background-color: #00021f;
+		background-color: #fff;
 		text-align: center;
 		position: fixed;
 		left: 0;
@@ -2136,6 +2141,7 @@ input, select, textarea {
 		cursor: default;
 		height: 3.5em;
 		line-height: 3.5em;
+		box-shadow: 1px 6px 10px -6px;
 	}
 
 		#nav ul {
@@ -2156,12 +2162,12 @@ input, select, textarea {
 			transition: background-color .2s ease-in-out;
 			position: relative;
 			display: block;
-			color: #fff;
+			color: #00021f;
 			text-decoration: none;
 			outline: 0;
 			font-weight: 600;
 			border-radius: 8px;
-			color: #fff;
+			color: #00021f;
 			height: 2.5em;
 			line-height: 2.5em;
 			padding: 0 1.25em;
