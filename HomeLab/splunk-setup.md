@@ -112,49 +112,29 @@ This lab simulates a **real-world enterprise domain environment** with a **Secur
 
 ---
 
-### **Accessing the Splunk Web Interface**
-- Since the Ubuntu server runs in CLI mode, access the Splunk web interface from a **browser on another machine** by navigating to:
-  `http://<Ubuntu-Server-IP>:8000`
-- Log in using the credentials set during installation.
+### **Automated Log Parsing and Anomaly Detection**
+To automate log parsing and detect anomalies, two scripts are scheduled to run every **10 minutes** on the **Ubuntu Splunk Server** using cron jobs:
 
----
+1. **Log Parser** - Queries Splunk logs and saves the results:
+   [View Script](https://github.com/YourGitHubUsername/Portfolio/blob/main/Scripts/log-parser.py)
 
-## **Splunk Queries for Security Monitoring**
-#### 🔹 **Detecting Multiple Failed Logins (Brute Force Attack)**
-   ```spl
-   index=endpoint EventCode=4625 | stats count by Account_Name, Client_IP
-   ```
-#### 🔹 **Tracking Privilege Escalation (Admin Logins)**
-   ```spl
-   index=endpoint EventCode=4672 | table _time, Account_Name, Logon_Type
-   ```
-#### 🔹 **Monitoring Process Execution (Possible Malware Activity)**
-   ```spl
-   index=endpoint EventCode=1 | table _time, Parent_Process, New_Process, CommandLine
-   ```
+2. **Anomaly Detector** - Identifies suspicious activity (failed logins, admin logins, process execution):
+   [View Script](https://github.com/YourGitHubUsername/Portfolio/blob/main/Scripts/anomaly-detector.sh)
 
----
-
-## **Automated Log Parsing with Python**
-To automate log parsing and analysis, a **Python script** has been set up on the **Ubuntu Splunk Server**. The script runs every **10 minutes** using a **cron job** and queries Splunk for security events.
-
-The script is stored at:
-```
-https://github.com/YourGitHubUsername/Portfolio/blob/main/Scripts/log-parser.py
-```
-To modify or update the script, navigate to the file location and edit as needed.
-
-To schedule the script to run every 10 minutes, add the following cron job:
+#### **Setting Up the Cron Jobs**
+To schedule the scripts, add the following entries to the cron scheduler:
 ```bash
 (crontab -l 2>/dev/null; echo "*/10 * * * * python3 /path/to/log-parser.py") | crontab -
+(crontab -l 2>/dev/null; echo "*/10 * * * * bash /path/to/anomaly-detector.sh") | crontab -
 ```
-To view scheduled execution, use:
+To verify scheduled tasks:
 ```bash
 crontab -l
 ```
-To manually run the script:
+To manually run a script:
 ```bash
 python3 /path/to/log-parser.py
+bash /path/to/anomaly-detector.sh
 ```
 
 ---
