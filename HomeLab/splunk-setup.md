@@ -135,6 +135,30 @@ This lab simulates a **real-world enterprise domain environment** with a **Secur
 
 ---
 
+## **Automated Log Parsing with Python**
+To automate log parsing and analysis, a **Python script** has been set up on the **Ubuntu Splunk Server**. The script runs every **10 minutes** using a **cron job** and queries Splunk for security events.
+
+The script is stored at:
+```
+https://github.com/YourGitHubUsername/Portfolio/blob/main/Scripts/log-parser.py
+```
+To modify or update the script, navigate to the file location and edit as needed.
+
+To schedule the script to run every 10 minutes, add the following cron job:
+```bash
+(crontab -l 2>/dev/null; echo "*/10 * * * * python3 /path/to/log-parser.py") | crontab -
+```
+To view scheduled execution, use:
+```bash
+crontab -l
+```
+To manually run the script:
+```bash
+python3 /path/to/log-parser.py
+```
+
+---
+
 ## **Use Cases & Threat Detection**
 ✅ **Detect unauthorized logins to domain accounts**
 ✅ **Monitor system process execution for malware activity**
