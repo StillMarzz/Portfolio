@@ -9,20 +9,20 @@ Welcome to my **Cybersecurity Portfolio**! This repository highlights my hands-o
 ## 📂 Sections  
 
 ### 🏠 [Home Lab Projects](./HomeLab/)  
-- **[Splunk SIEM Setup](./HomeLab/Splunk-SIEM.md)** – Configured Splunk on an Ubuntu server to collect and analyze Windows event logs.  
-- **[Incident Response Simulation](./HomeLab/Incident-Response.md)** – Investigated simulated security incidents using **Splunk** and **Windows Event Logs**.  
+- **[Splunk SIEM Setup](./HomeLab/splunk-setup.md)** – Configured Splunk on an Ubuntu server to collect and analyze Windows event logs.  
+- **[Incident Response Simulation](./HomeLab/incident-response.md)** – Investigated simulated security incidents using **Splunk** and **Windows Event Logs**.  
 
 ### 🔎 [Threat Hunting & Detection](./ThreatHunting/)  
-- **[Log Analysis](./ThreatHunting/Log-Analysis.md)** – Examined Windows Event Logs for security incidents.  
-- **[Custom Splunk Queries](./ThreatHunting/Splunk-Queries.md)** – Created **detection rules** for common attack techniques.  
+- **[Log Analysis](./ThreatHunting/log-analysis.md)** – Examined Windows Event Logs for security incidents.  
+- **[Custom Splunk Queries](./ThreatHunting/splunk-queries.md)** – Created **detection rules** for common attack techniques.  
 
 ### 🎯 [CTF & Practical Write-Ups](./CTF-Writeups/)  
 - **[HTB & THM Challenges](./CTF-Writeups/HTB-THM.md)** – **Detailed walkthroughs** focusing on SOC-relevant skills.  
-- **[SOC Analysis CTFs](./CTF-Writeups/SOC-CTFs.md)** – Investigated **simulated attacks** in CTF environments.  
+- **[SOC Analysis CTFs](./CTF-Writeups/SOCAnalysis.md)** – Investigated **simulated attacks** in CTF environments.  
 
 ### ⚡ [Scripts & Automation](./Scripts/)  
-- **[Log Parsing Scripts](./Scripts/Log-Parsing.md)** – Python/Bash scripts for **automating log analysis**.  
-- **[Alerting & Monitoring](./Scripts/Alerting-Monitoring.md)** – Automated scripts for **detecting anomalies**.  
+- **[Log Parsing Scripts](./Scripts/log-parser.py)** – Python/Bash scripts for **automating log analysis**.  
+- **[Alerting & Monitoring](./Scripts/alert-script.sh)** – Automated scripts for **detecting anomalies**.  
 
 ---
 
