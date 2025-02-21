@@ -1,0 +1,1 @@
+Splunk SIEM Setup – Configured Splunk on an Ubuntu server to collect and analyze Windows event logs.
