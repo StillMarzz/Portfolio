@@ -1,51 +1,71 @@
+import os
 import requests
 import json
+import urllib3
 
-# Splunk API Credentials
-splunk_host = "http://localhost:8089"
-username = "admin"
-password = "yourpassword"
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Queries for different security events
+SPLUNK_HOST = "https://your-splunk-server:8089"
+USERNAME = "admin"
+PASSWORD = "your-password"
+SEARCH_URL = f"{SPLUNK_HOST}/services/search/jobs/export"
+
+# Define multiple queries
 queries = {
     "failed_logins": 'search index=endpoint EventCode=4625 | table _time, Account_Name, Client_IP',
     "admin_logins": 'search index=endpoint EventCode=4672 | table _time, Account_Name, Logon_Type',
     "process_execution": 'search index=endpoint EventCode=1 | table _time, Parent_Process, New_Process, CommandLine'
 }
 
-# Function to run a Splunk query
-def run_splunk_query(search_query):
-    search_url = f"{splunk_host}/services/search/jobs"
+# Define the shared folder mount point
+DC_FOLDER = "/mnt/dc_logs"  # This is where the Windows share is mounted
 
-    response = requests.post(
-        search_url,
-        auth=(username, password),
-        data={"search": f"search {search_query}", "output_mode": "json", "exec_mode": "blocking"},
-        verify=False
-    )
+# Ensure the mounted folder is accessible
+if not os.path.exists(DC_FOLDER):
+    print(f"Error: {DC_FOLDER} is not accessible. Is the share mounted?")
+    exit()
 
-    if response.status_code == 201:
-        sid = response.json()["sid"]
-        results_url = f"{splunk_host}/services/search/jobs/{sid}/results?output_mode=json"
-        results_response = requests.get(results_url, auth=(username, password), verify=False)
-        return results_response.json()
-    else:
-        print(f"Error: {response.text}")
-        return None
+# Function to decode any nested JSON fields
+def decode_nested_json(entry):
+    """Recursively decode JSON strings inside JSON fields."""
+    for key, value in entry.items():
+        if isinstance(value, str):  # Check if the value is a string
+            try:
+                decoded_value = json.loads(value)  # Try decoding it as JSON
+                entry[key] = decoded_value  # Replace with parsed JSON
+            except (json.JSONDecodeError, TypeError):
+                pass  # Skip if it's not valid JSON
+    return entry
 
-# Run Queries & Store Results
-log_data = {}
+# Loop through each query
+for query_name, search_query in queries.items():
+    print(f"Running query: {query_name}")
 
-for key, query in queries.items():
-    print(f"\nFetching results for: {key.replace('_', ' ').title()}")
-    results = run_splunk_query(query)
+    params = {
+        "search": search_query,
+        "output_mode": "json"
+    }
 
-    if results and "results" in results:
-        log_data[key] = results["results"]
+    response = requests.post(SEARCH_URL, auth=(USERNAME, PASSWORD), verify=False, data=params)
 
-# Save logs to a JSON file
-log_file_path = "/opt/splunk/scripts/splunk_log_results.json"
-with open(log_file_path, "w") as log_file:
-    json.dump(log_data, log_file, indent=4)
+    try:
+        # Process newline-separated JSON (Splunk returns multiple JSON objects on new lines)
+        json_objects = [json.loads(line) for line in response.text.strip().split("\n") if line]
 
-print(f"Results logged successfully at {log_file_path}.")
+        # Decode nested JSON inside results
+        cleaned_results = [decode_nested_json(entry) for entry in json_objects]
+
+        # Save results in the mounted DC shared folder
+        filename = os.path.join(DC_FOLDER, f"{query_name}.json")
+        with open(filename, "a", encoding="utf-8") as log_file:
+            for entry in cleaned_results:
+                json.dump(entry, log_file)  # Append each entry as valid JSON
+                log_file.write("\n")  # Newline for JSONL format
+
+        print(f"Successfully appended results to {filename} on the Domain Controller")
+
+    except json.JSONDecodeError as e:
+        print(f"JSON Decode Error for {query_name}: {e}")
+        print("Raw Response:", response.text)
+    except Exception as e:
+        print(f"Unexpected Error for {query_name}: {e}")
