@@ -1,1 +1,0 @@
-HTB & THM Challenges – Detailed walkthroughs focusing on SOC-relevant skills.
