@@ -17,6 +17,10 @@ The simulated environment consists of:
 - **PXE Boot Server** (`THM MDT - 10.200.80.202`)
 - **Attacking System** (Kali/Linux machine)
 
+Network Diagram Provided to us:
+
+![Network Diagram](screenshots//Screenshot_20250223_114222.png)  
+
 ### **Objectives**
 ✅ Enumerate NTLM authentication mechanisms  
 ✅ Exploit weak credentials via password spraying  
@@ -30,13 +34,11 @@ The simulated environment consists of:
 
 The first step was verifying if the **targeted domain name resolution** was correctly set. We configured our DNS settings to use the domain controller (`10.200.80.101`).
 
-**Screenshot:**  ![DNS Setup](screenshots//Screenshot_20250223_130420.png)  
+![DNS Setup](screenshots//Screenshot_20250223_130420.png)  
 
 Once configured, an **nslookup query** was performed to validate DNS resolution.
 
-**Screenshot:**  ![nslookup query](screenshots//Screenshot_20250223_130506.png)  
-
-We then checked for previously compromised credentials using the public breach-checking site:
+![nslookup query](screenshots//Screenshot_20250223_130506.png)  
 
 **Q1: What popular website can be used to verify if your email address or password has ever been exposed in a publicly disclosed data breach?**
 📝 **Answer:** `haveibeenpwned`
@@ -50,41 +52,64 @@ To identify weak credentials, we attempted a **password spraying attack** agains
 **Q2: What is the name of the challenge-response authentication mechanism that uses NTLM?**
 📝 **Answer:** `netntlm`
 
+We found that the NTLM auth requested a username and password
+![Password Spraying Script](screenshots//Screenshot_20250223_130548.png)  
+
 Using an **NTLM password spraying script**, we tested a default password (`Changeme123`) against a list of known usernames.
 
-**Screenshot:**  ![Password Spraying Script](screenshots//Screenshot_20250223_130738.png)  
+![Password Spraying Script](screenshots//Screenshot_20250223_130635.png)  
+![Password Spraying Script](screenshots//Screenshot_20250223_130711.png)   
 
 The attack was **successful**, revealing **four valid credential pairs**:
 - **Third Valid Username:** `gordon.stevens`
 - **Total Valid Credentials Found:** `4`
 
-**Screenshot:**  ![Successful Logins](screenshots//Screenshot_20250223_130815.png)  
+![Successful Logins](screenshots//Screenshot_20250223_130738.png)  
 
 Testing one of the compromised accounts on the **NTLM-secured web application** displayed the following response:
 
 **Q5: What is the message displayed by the web application when authenticating with a valid credential pair?**
 📝 **Answer:** `Hello World`
 
-**Screenshot:**  ![Successful Authentication](screenshots//Screenshot_20250223_130711.png)  
+![Successful Authentication](screenshots//Screenshot_20250223_130815.png)  
 
 ---
 
 ## **4. LDAP Pass-Back Attack**
 
+We found a printer settings page at printer.za.tryhackme.com/settings, which sends information to a server:
+
+![Printer Settings](screenshots//Screenshot_20250223_131411.png)  
+
+We try to intercept using a **Netcat Listener** and changing the server information to our IP but only receive encrypted credentials:
+
+![Printer Settings Interception](screenshots//Screenshot_20250223_131538.png)  
+
 Next, we targeted **LDAP authentication vulnerabilities** by setting up a **rogue LDAP server** to capture plaintext credentials.
+
+![LDAP Configuration](screenshots//Screenshot_20250223_131608.png)  
+![LDAP Capture Setup](screenshots//Screenshot_20250223_131702.png)  
+
+Then, we adjusted the olcSaslSecProps.ldif to use plaintext credentials.
+
+![olc configure](screenshots//Screenshot_20250223_131833.png)  
+![Restart using configuration](screenshots//Screenshot_20250223_131856.png) 
+![verifying configuration](screenshots//Screenshot_20250223_131916.png)
+
+Then, we set up a tcpdump to listen for the credentials:
+
+![tcpdump listener](screenshots//Screenshot_20250223_131942.png)  
 
 **Q6: What type of attack can be performed against LDAP Authentication systems not commonly found against Windows Authentication systems?**
 📝 **Answer:** `ldap pass-back attack`
 
 We allowed **`login` and `plain` authentication mechanisms** to force unencrypted logins.
 
-**Screenshot:**  ![LDAP Capture Setup](screenshots//Screenshot_20250223_131411.png)  
-
 Captured credentials:
 - **Username:** `svcLDAP`
 - **Password:** `tryhackmeldappass1@`
 
-**Screenshot:**  ![Captured Credentials](screenshots//Screenshot_20250223_132003.png)  
+![Captured Credentials](screenshots//Screenshot_20250223_132003.png)  
 
 ---
 
@@ -95,17 +120,45 @@ To capture **NTLM authentication hashes**, we deployed **Responder**.
 **Q9: What is the name of the tool we can use to poison and capture authentication requests on the network?**
 📝 **Answer:** `responder`
 
-**Screenshot:**  ![Responder Setup](screenshots//Screenshot_20250223_132043.png)  
+![Responder Setup](screenshots//Screenshot_20250223_132043.png)  
 
-Captured credentials:
+Captured credentials (Didn't get the original screenshot):
+
+![Responder Interception](screenshots//Screenshot_20250223_132115.png)
+![Responder Interception](screenshots//Screenshot_20250223_132158.png)
+
+Then, using hashcat, we decrypted the user credentials:
+
+![Hashcat](screenshots//Screenshot_20250223_132234.png)
+
+
 - **Username:** `svcFileCopy`
 - **Cracked Password:** `FPassword1!`
-
-**Screenshot:**  ![Cracked Hash](screenshots//Screenshot_20250223_132158.png)  
 
 ---
 
 ## **6. PXE Boot Image Credential Extraction**
+
+We would normally receive the IP for the MDT server via DHCP, but since it's provided in the network diagram, we already have it:
+
+![pxe server](screenshots//Screenshot_20250223_133627.png)  
+
+We then ssh into the thmjmp1 machine using the password **Password1@**
+
+![SSH connection](screenshots//Screenshot_20250223_133720.png)  
+
+From there, we create a directory for ourselves and copy over the PowerPXE script:
+
+![pxe script](screenshots//Screenshot_20250223_133754.png)  
+
+Then, referencing the x64 file, we noticed in the browser, we copy that into our new directory:
+
+![mdt file](screenshots//Screenshot_20250223_133834.png)  
+
+Now, we can easily find the path to the MDT image file, copy it to our directory using tftp, and extract any credentials.
+
+![Image file](screenshots//Screenshot_20250223_133903.png)  
+![Extracted Credentials](screenshots//Screenshot_20250223_134019.png)  
 
 Using **TFTP**, we retrieved PXE Boot configuration files to extract credentials.
 
@@ -117,24 +170,31 @@ Using **TFTP**, we retrieved PXE Boot configuration files to extract credentials
 
 Extracted credentials:
 - **Username:** `svcMDT`
-- **Password:** `PXEBootSecure1@`
-
-**Screenshot:**  ![Extracted PXE Credentials](screenshots//Screenshot_20250223_134019.png)  
+- **Password:** `PXEBootSecure1@`  
 
 ---
 
-## **7. McAfee Database Credential Extraction**
+## **7. Configuration File Credential Extraction**
 
-Extracting stored credentials from the McAfee **`ma.db`** database.
+Upon enumerating the file system, we found a McAfee **`ma.db`** database and using scp, downloaded it to our machine.
+
+![McAfee Database](screenshots//Screenshot_20250223_134322.png)  
+![scp Download](screenshots//Screenshot_20250223_134343.png)
+
+We then used an sqlitebrowser to enumerate the database and found credentials stored in the **AGENT_REPOSITORIES** database
+
+![sqlitebrowser](screenshots//Screenshot_20250223_134405.png)
+![agent-repositories database](screenshots//Screenshot_20250223_134427.png)
+
+We then decrypted **AUTH_PASSWD** using a python script found at: ![Mcafee-sitelist-pwd-decryption](https://github.com/funoverip/mcafee-sitelist-pwd-decryption):
+
+![Python Decryption](screenshots//Screenshot_20250223_134552.png)
 
 **Q18: What table in this database stores the credentials of the orchestrator?**
 📝 **Answer:** `AGENT_REPOSITORIES`
 
-Decrypted credentials using a python script ![Mcafee-sitelist-pwd-decryption](https://github.com/funoverip/mcafee-sitelist-pwd-decryption):
 - **Username:** `svcAV`
-- **Password:** `MyStrongPassword!`
-
-**Screenshot:**  ![Decrypted Credentials](screenshots//Screenshot_20250223_134552.png)  
+- **Password:** `MyStrongPassword!` 
 
 ---
 
@@ -144,7 +204,7 @@ Decrypted credentials using a python script ![Mcafee-sitelist-pwd-decryption](ht
 - Weak passwords enabled **password spraying attacks**.
 - **LDAP authentication** was vulnerable to **pass-back attacks**, exposing plaintext credentials.
 - **NTLM authentication poisoning** allowed **credential interception and cracking**.
-- **PXE boot images stored domain admin-level credentials**.
+- **PXE boot images stored credentials**.
 - **McAfee database contained stored credentials**, which were easily decrypted.
 
 ### **Mitigation Strategies:**
@@ -152,7 +212,6 @@ Decrypted credentials using a python script ![Mcafee-sitelist-pwd-decryption](ht
 ✅ Disable NTLM authentication where possible  
 ✅ Enforce LDAP signing & channel binding  
 ✅ Restrict access to PXE boot files and encrypt stored credentials  
-✅ Secure McAfee configurations by hashing and salting stored passwords  
+✅ Secure configuration files by hashing and salting stored passwords  
 
-🚀 **Stay secure, and keep hacking!**
-
+🚀 **TryHackMe link to challenge: ![Breaching AD](https://tryhackme.com/room/breachingad)**
