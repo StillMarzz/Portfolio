@@ -38,8 +38,4 @@ This portfolio is a **work in progress**, and I'll be continuously adding new pr
 
 ## 🏆 Connect with Me  
 📧 **Email:** [parker8148@gmail.com.com]  
-💼 **LinkedIn:** [[Your LinkedIn Profile](https://www.linkedin.com/in/jonathan-brazell/)]
-
----
-
-🔥 **Stay tuned for more cybersecurity insights!** 🔥  
+💼 **LinkedIn:** [[Parker Brazell](https://www.linkedin.com/in/jonathan-brazell/)]
