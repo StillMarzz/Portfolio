@@ -1,9 +1,9 @@
 ## **Friday Overtime: Hello Busy Weekend - CTF Write-Up**
 
-**Author:** [Your Name]\
-**Platform:** [Hack The Box / TryHackMe / Other]\
+**Author:** StillMarzz\
+**Platform:** TryHackMe\
 **Category:** Threat Intelligence / SOC Analysis\
-**Date:** [Date Completed]
+**Date:** 2/22/2025
 
 ---
 
