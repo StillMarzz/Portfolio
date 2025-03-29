@@ -1,5 +1,6 @@
 **OffSec Proving Ground -- Twiggy Room Write-Up**
 ================================================
+This write-up is for the OffSec Proving Grounds Practice machine "Twiggy" — not part of any exam or paid certification content. All information is publicly accessible and shared for educational purposes only.
 
 **Overview**
 ------------
