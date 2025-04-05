@@ -21,7 +21,7 @@ nmap -sCV -T4 -p- $IP -oN enu/nmap-services.md
 
 Attempted to establish null sessions with SMB and RPC services:
 
-![SMB Null Session Denied](.github/screenshots/dvr4-smb-null-denied.png)
+![SMB Null Session Denied](.github/screenshots/dvr4-smb--rpc-null.png)
 
 ---
 
