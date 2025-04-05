@@ -1,6 +1,3 @@
-
-# Resourced.local Domain Compromise
-
 ## 1. Overview
 
 This assessment simulated an internal threat actor compromising a Windows Active Directory environment through credential abuse and privilege escalation via misconfigured Active Directory permissions. The attacker escalated privileges from a domain user to full control over the Domain Controller.
@@ -13,12 +10,13 @@ This assessment simulated an internal threat actor compromising a Windows Active
 
 Performed a port scan to identify exposed services on the target.
 
-![Nmap](.github/screenshots/screenshot1.png)
+![](.github/screenshots/screenshot1.png)
 
 Notable Identified services:
-- SMB
-- RPC
-- LDAP
+
+- SMB  
+- RPC  
+- LDAP  
 - WinRM
 
 ---
@@ -27,15 +25,15 @@ Notable Identified services:
 
 Tested anonymous SMB login — no shares were available.
 
-![Anonymous SMB](.github/screenshots/screenshot2.png)
+![](.github/screenshots/screenshot2.png)
 
 Used `rpcclient` to enumerate user RIDs and descriptions.
 
-![rpcclient enum](.github/screenshots/screenshot3.png)
+![](.github/screenshots/screenshot3.png)
 
 Discovered user account `V.Ventz` with a description that hinted at a password.
 
-![Interesting Description](.github/screenshots/screenshot4.png)
+![](.github/screenshots/screenshot4.png)
 
 ---
 
@@ -43,11 +41,11 @@ Discovered user account `V.Ventz` with a description that hinted at a password.
 
 Checked this password with crackmapexec and found some readable shares:
 
-![Shares](.github/screenshots/screenshot5.png)
+![](.github/screenshots/screenshot5.png)
 
 Enumerated available shares and identified sensitive files on the "Password Audit" share.
 
-![Files](.github/screenshots/screenshot6.png)
+![](.github/screenshots/screenshot6.png)
 
 ---
 
@@ -55,38 +53,41 @@ Enumerated available shares and identified sensitive files on the "Password Audi
 
 Downloaded `ntds.dit` and `SYSTEM` files from the share and extracted all domain user hashes.
 
-![ntds](.github/screenshots/screenshot7.png)
-![secretsdump](.github/screenshots/screenshot8.png)
+![](.github/screenshots/screenshot7.png)  
+![](.github/screenshots/screenshot8.png)
 
-Extracted accounts included `Administrator`, `L.Livingstone`, and others.  
-Tested pass-the-hash and found a valid one:
+Extracted accounts included `Administrator`, `L.Livingstone`, and others.
 
-![crackmapexec success](.github/screenshots/screenshot9.png)
+I tested pass-the-hash through crackmapexec on all of these and found another with a valid hash:
+
+![](.github/screenshots/screenshot9.png)
 
 ---
 
 ## 6. Remote Access via Evil-WinRM
 
-Logged into the target using the `L.Livingstone` NTLM hash via WinRM.
+While I wasn't able to crack any of the hashes, remembering that winrm was discovered in our initial scan, I logged into the target using the `L.Livingstone` NTLM hash via WinRM.
 
-![evil-winrm](.github/screenshots/screenshot10.png)
+![](.github/screenshots/screenshot10.png)
 
-⚠️ Evil-WinRM was very slow and unresponsive, so I opted for offline enumeration.
+⚠️ I tried a lot of manual enumeration and uploading tools, but the Evil-WinRM was extremely unresponsive so I moved to offline enumeration with BloodHound.
 
 ---
 
 ## 7. Offline AD Enumeration via BloodHound
 
-Used `bloodhound-python` with the NTLM hash to collect AD data externally.
+Used `bloodhound-python` with the NTLM hash to collect Active Directory data externally.
 
-![BloodHound collect](.github/screenshots/screenshot11.png)
+![](.github/screenshots/screenshot11.png)
 
-Loaded data into BloodHound and identified a misconfiguration:
+Loaded data into BloodHound and analyzed relationships.
 
-![BloodHound UI](.github/screenshots/screenshot12.png)
-![GenericAll to DC](.github/screenshots/screenshot13.png)
+![](.github/screenshots/screenshot12.png)  
+![](.github/screenshots/screenshot13.png)
 
-`L.Livingstone` had `GenericAll` on the Domain Controller object.
+BloodHound confirmed that the user `L.Livingstone` had `GenericAll` rights on the `RESOURCEDC` computer object, allowing us to configure delegation and impersonate a Domain Admin.
+
+I tried PowerView via my Evil-WinRM shell for further enumeration, but winrm wouldn't stay stable long enough to upload anything. So after some research on the GenericAll privileges, I found this article about Impackets Addcomputer tool on [0xBEN](https://notes.benheater.com/books/active-directory/page/impacket-addcomputer)
 
 ---
 
@@ -96,13 +97,17 @@ Loaded data into BloodHound and identified a misconfiguration:
 
 Used current access to create a new computer account in the domain.
 
-![addcomputer](.github/screenshots/screenshot14.png)
+![](.github/screenshots/screenshot14.png)  
+
+Verified on the WinRM shell:
+
+![](.github/screenshots/screenshot15.png)
 
 ### 8.2 Delegate to the DC
 
-Used `rbcd.py` to set delegation rights on the DC.
+I found a script that manages delegation rights and lets us set `msDS-AllowedToActOnBehalfOfOtherIdentity` [tothi](https://raw.githubusercontent.com/tothi/rbcd-attack/master/rbcd.py)
 
-![rbcd attack](.github/screenshots/screenshot15.png)
+![](.github/screenshots/screenshot16.png)
 
 ---
 
@@ -110,11 +115,17 @@ Used `rbcd.py` to set delegation rights on the DC.
 
 ### 9.1 Get Administrator TGT
 
-Used Impacket’s `getST` to forge a TGT for the Administrator user.
+We used `getST.py` to request a service ticket (TGS) as `Administrator`, allowing us to impersonate that user using the forged Kerberos ticket.
+
+![](.github/screenshots/screenshot17.png)
 
 ### 9.2 Use the Ticket
 
-Used the forged TGT with `psexec.py` to gain SYSTEM shell access to the DC.
+![](.github/screenshots/screenshot18.png)
+
+Used the forged TGT to obtain a SYSTEM shell on the Domain Controller.
+
+![](.github/screenshots/screenshot19.png)
 
 🎉 Full compromise of the `resourced.local` domain achieved.
 
@@ -122,7 +133,7 @@ Used the forged TGT with `psexec.py` to gain SYSTEM shell access to the DC.
 
 ## 10. Lessons Learned
 
-- User descriptions can leak sensitive credentials.
-- Readable shares exposing `ntds.dit` and `SYSTEM` provide full credential dumps.
-- `GenericAll` on a DC object enables full domain compromise via RBCD.
-- Offline BloodHound recon is powerful when shells are unstable.
+- User descriptions can leak sensitive credentials.  
+- Readable shares exposing `ntds.dit` and `SYSTEM` provide a full credential dump.  
+- `GenericAll` on a DC object enables full domain compromise via RBCD.  
+- Offline BloodHound recon is a powerful tool when remote shells are unstable.
