@@ -6,7 +6,7 @@ Performed a comprehensive port scan to identify open services:
 nmap -sCV -T4 -p- $IP -oN enu/nmap-services.md
 ```
 
-![Nmap Scan Results](../.github/screenshots/dvr4-01-nmap-scan.png)
+![Nmap Scan Results](.github/screenshots/dvr4-01-nmap-scan.png)
 
 **Notable Services:**
 
@@ -21,7 +21,7 @@ nmap -sCV -T4 -p- $IP -oN enu/nmap-services.md
 
 Attempted to establish null sessions with SMB and RPC services:
 
-![SMB Null Session Denied](../.github/screenshots/dvr4-02-smb-null-denied.png)
+![SMB Null Session Denied](.github/screenshots/dvr4-02-smb-null-denied.png)
 
 ---
 
@@ -29,7 +29,7 @@ Attempted to establish null sessions with SMB and RPC services:
 
 Navigated to the web service running on port 8080 and encountered the Argus Surveillance dashboard:
 
-![Argus Surveillance Dashboard](../.github/screenshots/dvr4-03-argus-ui.png)
+![Argus Surveillance Dashboard](.github/screenshots/dvr4-03-argus-ui.png)
 
 Initiated a directory search alongside manual exploration:
 
