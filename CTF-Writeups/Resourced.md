@@ -2,6 +2,8 @@
 
 This assessment simulated an internal threat actor compromising a Windows Active Directory environment through credential abuse and privilege escalation via misconfigured Active Directory permissions. The attacker escalated privileges from a domain user to full control over the Domain Controller.
 
+📌 This lab is part of OffSec’s Proving Grounds Practice platform and is not part of any exam content.
+
 ---
 
 ## 2. Initial Enumeration
