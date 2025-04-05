@@ -6,7 +6,7 @@ Performed a comprehensive port scan to identify open services:
 nmap -sCV -T4 -p- $IP -oN enu/nmap-services.md
 ```
 
-![Nmap Scan Results](.github/screenshots/dvr4-01-nmap-scan.png)
+![Nmap Scan Results](.github/screenshots/dvr4-nmap-scan.png)
 
 **Notable Services:**
 
@@ -21,7 +21,7 @@ nmap -sCV -T4 -p- $IP -oN enu/nmap-services.md
 
 Attempted to establish null sessions with SMB and RPC services:
 
-![SMB Null Session Denied](.github/screenshots/dvr4-02-smb-null-denied.png)
+![SMB Null Session Denied](.github/screenshots/dvr4-smb-null-denied.png)
 
 ---
 
@@ -29,7 +29,7 @@ Attempted to establish null sessions with SMB and RPC services:
 
 Navigated to the web service running on port 8080 and encountered the Argus Surveillance dashboard:
 
-![Argus Surveillance Dashboard](.github/screenshots/dvr4-03-argus-ui.png)
+![Argus Surveillance Dashboard](.github/screenshots/dvr4-argus-ui.png)
 
 Initiated a directory search alongside manual exploration:
 
@@ -52,19 +52,19 @@ On the /users.html page, functionalities to add users, change access levels, and
 
 Utilized `searchsploit` to identify potential vulnerabilities associated with the Argus Surveillance software:
 
-![SearchSploit Results](../.github/screenshots/dvr4-04-searchsploit.png)
+![SearchSploit Results](.github/screenshots/dvr4-searchsploit.png)
 
 A directory traversal vulnerability was particularly noteworthy:
 
-![Directory Traversal Exploit](../.github/screenshots/dvr4-05-dir-traversal-poc.png)
+![Directory Traversal Exploit](.github/screenshots/dvr4-dir-traversal-poc.png)
 
 Considering the open SSH port and the user `viewer` found on the web interface, attempted to retrieve SSH keys using the vulnerability:
 
-![Retrieving SSH Keys](../.github/screenshots/dvr4-06-dir-traversal-key.png)
+![Retrieving SSH Keys](.github/screenshots/dvr4-dir-traversal-key.png)
 
 Successfully obtained the private SSH key and established a shell:
 
-![Initial Shell Access](../.github/screenshots/dvr4-07-initial-shell.png)
+![Initial Shell Access](.github/screenshots/dvr4-initial-shell.png)
 
 ---
 
@@ -72,7 +72,7 @@ Successfully obtained the private SSH key and established a shell:
 
 Checked current user privileges and group memberships:
 
-![User Privileges](../.github/screenshots/dvr4-08-whoami-all.png)
+![User Privileges](.github/screenshots/dvr4-whoami-all.png)
 
 No interesting privileges were discovered. Looked into installed programs but found nothing noteworthy.
 
@@ -86,27 +86,27 @@ findstr /SIM /C:"password" *.ini *.cfg *.config *.xml
 
 Discovered `DVRParams.ini` with encrypted credentials:
 
-![Viewer Password](../.github/screenshots/dvr4-09-ini-hash-viewer.png)  
-![Administrator Password](../.github/screenshots/dvr4-10-ini-hash-admin.png)
+![Viewer Password](.github/screenshots/dvr4-ini-hash-viewer.png)  
+![Administrator Password](.github/screenshots/dvr4-ini-hash-admin.png)
 
 Used the weak encryption decryptor script to recover:
 
-![Decrypt Viewer](../.github/screenshots/dvr4-11-decrypt-viewer.png)  
-![Decrypt Admin](../.github/screenshots/dvr4-12-decrypt-admin.png)
+![Decrypt Viewer](.github/screenshots/dvr4-decrypt-viewer.png)  
+![Decrypt Admin](.github/screenshots/dvr4-decrypt-admin.png)
 
 Guessed the final special character in the decrypted admin password and validated it using `runas`:
 
-![Successful Runas](../.github/screenshots/dvr4-13-runas-success.png)
+![Successful Runas](.github/screenshots/dvr4-runas-success.png)
 
 Downloaded and used netcat to pop a reverse shell:
 
-![Download Netcat](../.github/screenshots/dvr4-14-certutil-nc-download.png)  
-![Start Listener](../.github/screenshots/dvr4-15-nc-listen.png)
+![Download Netcat](.github/screenshots/dvr4-certutil-nc-download.png)  
+![Start Listener](.github/screenshots/dvr4-nc-listen.png)
 
 Obtained a SYSTEM shell:
 
-![Runas Shell](../.github/screenshots/dvr4-16-runas-shell.png)  
-![SYSTEM Shell](../.github/screenshots/dvr4-17-system-access-confirm.png)
+![Runas Shell](.github/screenshots/dvr4-runas-shell.png)  
+![SYSTEM Shell](.github/screenshots/dvr4-system-access-confirm.png)
 
 ---
 
@@ -117,3 +117,4 @@ Obtained a SYSTEM shell:
 - `searchsploit` and manual recon remain crucial tools for exploitation.
 - When password cracking fails, inference and trial/error can still lead to success.
 - Always audit configurations for hardcoded or weakly protected secrets.
+
