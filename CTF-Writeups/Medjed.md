@@ -115,7 +115,7 @@ This confirmed the presence of the vulnerable service.
 
 Next, I checked file and folder permissions:
 
-![Permissions & Privileges](.github/screenshots/Screenshot From 2025-04-06 13-22-00.png)
+![Permissions & Privileges](.github/screenshots/Medjed_service-perms.png)
 
 Our user had write access to `bd.exe`, and `SeShutdownPrivilege` was enabled.
 
