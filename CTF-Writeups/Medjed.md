@@ -109,13 +109,13 @@ I began by checking running services to see if the system was configured similar
 wmic service get name,displayname,pathname,startmode
 ```
 
-![Service Path](.github/screenshots/medjed_service_path_enumeration.png)
+![Service Path](.github/screenshots/medjed_permissions_and_privs.png)
 
 This confirmed the presence of the vulnerable service.
 
 Next, I checked file and folder permissions:
 
-![Permissions & Privileges](.github/screenshots/medjed_permissions_and_privs.png)
+![Permissions & Privileges](.github/screenshots/Screenshot From 2025-04-06 13-22-00.png)
 
 Our user had write access to `bd.exe`, and `SeShutdownPrivilege` was enabled.
 
