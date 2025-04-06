@@ -132,9 +132,6 @@ Uploaded the payload via `certutil`:
 ![Upload Success 1](.github/screenshots/medjed_certutil_upload_success.png)  
 ![Upload Success 2](.github/screenshots/medjed_certutil_upload_success.png)
 
-Verified successful transfer with Python HTTP server logs:
-
-![Python Server Logs](.github/screenshots/medjed_python_server_logs.png)
 
 Scheduled a reboot using `shutdown /r`:
 
